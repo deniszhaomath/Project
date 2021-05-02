@@ -13,11 +13,47 @@ Created on Mon Apr 12 23:02:05 2021
 #print (world_happiness_report_2021.isna().any())
 #print (world_happiness_report_2021[:4])
 
-#australia_rain = pd.read_csv("C:\\Users\\Home\\Desktop\\UCD Professional Academy\\datasets\\Australia rain\\weatherAUS.csv")
-#print (australia_rain)
-#print (australia_rain.head())
-#print (australia_rain.isna().any())
-#australia_rain_index = pd.DataFrame(index = "location")
+#import australia rain csv file and set "Date" column as index
+import pandas as pd
+import numpy as np
+australia_rain = pd.read_csv("C:\\Users\\Home\\Desktop\\UCD Professional Academy\\datasets\\Australia rain\\weatherAUS.csv",index_col="Date")
+print (australia_rain)
+#sort value of "Location" acending and "MinTemp" decending and save as australia_rain_min
+australia_rain_loc_min = australia_rain.sort_values(["Location","MinTemp"], ascending = [True,False])
+print (australia_rain_loc_min.head())
+#creat a new table for major cities sorted in alphabetic order
+aus_bigcity=["Adelaide", "Brisbane", "Darwin", "Melbourne", "Perth", "Sydney"]
+aus_bigcity_rain = australia_rain[australia_rain["Location"].isin(aus_bigcity)]
+aus_bigcity_rain_locsorted = aus_bigcity_rain.sort_values("Location",ascending = True)
+print (aus_bigcity_rain_locsorted)
+#create new column of temperature difference 
+aus_bigcity_rain_locsorted["TempDifferance"] = aus_bigcity_rain_locsorted["MaxTemp"] - aus_bigcity_rain_locsorted["MinTemp"]
+print (aus_bigcity_rain_locsorted)
+#for each location, use numpy to get min, max, mean and median of Temp3pm
+aus_loc_temp3pm = aus_bigcity_rain_locsorted.groupby("Location")["Temp3pm"].agg([np.min, np.max, np.mean, np.median])
+print (aus_loc_temp3pm)
+#pivot table and numpy to get min, max, mean and median of Temp3pm
+aus_loc_temp3pm_piv = aus_bigcity_rain_locsorted.pivot_table(values = "Temp3pm", index = "Location", aggfunc = [np.min, np.max, np.mean, np.median])
+print (aus_loc_temp3pm_piv)
+
+
+print (aus_bigcity_rain_locsorted.isna().any())
+#index as location and remove rows with missing value
+aus_loc_index = aus_bigcity_rain_locsorted.set_index (["Location"]).dropna()
+print (aus_loc_index.loc["Brisbane":"Melbourne"])
+aus_loc_index.to_csv ("aus_loc_index.csv")
+#scatter plot for rainfall vs pressure 9am
+import matplotlib.pyplot as plt
+aus_loc_index.plot (x = "Humidity3pm", y = "Rainfall", kind = "scatter", title = "Rainfall (mm) vs. Humidity at 3pm")
+plt.show()
+
+#create two small dataframes and merge
+for city in australia_rain:
+    city = australia_rain [australia_rain["Location"]=="Brisbane"]
+print (city)
+
+
+
 
 #import API request
 import requests
@@ -72,6 +108,7 @@ ts = TimeSeries(key,output_format='pandas')
 #data=fd.get_cash_flow_annual('TSLA')
 #print (data)
 
+#Import API data from alpha_vantage website 
 import pandas as pd
 from alpha_vantage.foreignexchange import ForeignExchange
 fx=ForeignExchange(key,output_format='pandas')
