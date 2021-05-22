@@ -211,16 +211,56 @@ smnbar_2019.fig.suptitle("Top 5 states with highest total crime in South, Midwes
 smnbar_2019.set(xlabel = "Total Crime (x1000000)", ylabel = "Top 5 states in South, Midwest and Northeast Regions")
 plt.show()            
 
+##insight 4
 
+crime_type = USA_crime_region_sorted_index.groupby(["year","region"])[["violent_crime",
+                                                              "homicide","robbery",
+                                                              "aggravated_assault",
+                                                              "property_crime",
+                                                              "burglary","larceny",
+                                                              "motor_vehicle_theft"]].agg(np.mean,).reset_index()
+print (crime_type)
+print(crime_type.info())
 
+crime_type_homicide=sns.lineplot(x="year",y="homicide",data=crime_type,hue="region")
+crime_type_homicide.set_title("Mean Homicide Rate in Each Region USA 1979 - 2019")
+crime_type_homicide.set(xlabel="Year",ylabel="Homicide Rate")
+plt.show()
 
+crime_type_robbery=sns.lineplot(x="year",y="robbery",data=crime_type,hue="region")
+crime_type_robbery.set_title("Mean Robbery Rate in Each Region USA 1979 - 2019")
+crime_type_robbery.set(xlabel="Year",ylabel="Robbery Rate")
+plt.show()
 
+crime_type_motor=sns.lineplot(x="year",y="motor_vehicle_theft",data=crime_type,hue="region")
+crime_type_motor.set_title("Mean Motor Vehicle Theft Rate in Each Region USA 1979 - 2019")
+crime_type_motor.set(xlabel="Year",ylabel="Motor Vehicle Theft Rate")
+plt.show()
 
+crime_type_burglary=sns.lineplot(x="year",y="burglary",data=crime_type,hue="region")
+crime_type_burglary.set_title("Mean Burglary Rate in Each Region USA 1979 - 2019")
+crime_type_burglary.set(xlabel="Year",ylabel="Burglary Rate")
+plt.show()
 
+crime_type_assault=sns.lineplot(x="year",y="aggravated_assault",data=crime_type,hue="region")
+crime_type_assault.set_title("Mean Aggravated Assault Rate in Each Region USA 1979 - 2019")
+crime_type_assault.set(xlabel="Year",ylabel="Aggravated Assault Rate")
+plt.show()
 
+crime_type_property=sns.lineplot(x="year",y="property_crime",data=crime_type,hue="region")
+crime_type_property.set_title("Mean Property Crime Rate in Each Region USA 1979 - 2019")
+crime_type_property.set(xlabel="Year",ylabel="Property Crime Rate")
+plt.show()
 
+crime_type_violent=sns.lineplot(x="year",y="violent_crime",data=crime_type,hue="region")
+crime_type_violent.set_title("Mean Violent Crime Rate in Each Region USA 1979 - 2019")
+crime_type_violent.set(xlabel="Year",ylabel="Violent Crime Rate")
+plt.show()
 
-
+crime_type_larceny=sns.lineplot(x="year",y="larceny",data=crime_type,hue="region")
+crime_type_larceny.set_title("Mean Larceny Rate in Each Region USA 1979 - 2019")
+crime_type_larceny.set(xlabel="Year",ylabel="Larceny Rate")
+plt.show()
 
 
 
