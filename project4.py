@@ -116,28 +116,100 @@ def my_function(statename):
     func_lineplot.set(xlabel="year",ylabel="Total Crime Number (x1000000")
     plt.show()
     
-    
 my_function("Illinois")
 
+##Use iterrows function to loop through datafram to 
+##access violence rate information
+#for ind,row in USA_crime_region_sorted_index.iterrows():
+ #   print (" In ", str(row["year"]), " ",row["state_name"]," has ", str(row["violent_crime"])," violent crime.")
     
+##merge datafram
+##first subset 2 dataframs, then merge them together
+print (USA_crime_region_sorted_index.info())
+USA_violent_crime = USA_crime_region_sorted_index[["year","state_name","violent_crime","aggravated_assault"]]
+print (USA_violent_crime.head())
+USA_light_crime = USA_crime_region_sorted_index[["year","state_name","robbery","burglary","motor_vehicle_theft"]]
+print (USA_light_crime.head())
+USA_mixed_crime = USA_violent_crime.merge(USA_light_crime,left_index=True,right_index=True)
+print (USA_mixed_crime.info())
+
+##numpy function
+##use numpy function to calculate max, min, mean and median total crime in each region
+print (USA_crime_region_sorted_index.info())
+crime_stats = USA_crime_region_sorted_index.groupby(["year","region"])["total_crime"].agg([np.max,np.min,np.mean,np.median])
+print (crime_stats)
+bar=sns.lineplot(x="year",y="median",hue="region",data=crime_stats)
+bar.set_title("Median Crime Rate in USA Regions 1979 - 2019")
+bar.set(xlabel="year", ylabel="Median Crime Rate")
+plt.show()
+
+##Visualisation insight
+
+##Insight 1
+##Correlation between population and total crime rate
+print (USA_crime_region_sorted_index.info())
+sns.lmplot(x="population",y="total_crime",ci=95,data=USA_crime_region_sorted_index)
+plt.xlabel("Population (x 10000000")
+plt.ylabel("Total Crime Number (x 1000000")
+plt.title("Correlation Between Population And Total Crime Rate", y =1.05)
+plt.show()
+
+##Insight 3
+##From the Median Crime Rate in USA Regions 1979 - 2019
+##we see crime rate peaked around 1990 in South, Midwest and Northeast
+##First we want to see the top 5 states in each of these 3 regions with highest crime in 1990
+south_midwest_northeast = USA_crime_region_sorted_index[(USA_crime_region_sorted_index["year"] == 1990)
+                                      &(USA_crime_region_sorted_index["region"].isin(["South","Midwest","Northeast"]))].sort_values(["region","total_crime"],ascending = [True,False])
+print (south_midwest_northeast.head())
+
+smnbar=sns.catplot(x="total_crime",y="state_name",
+                   data=south_midwest_northeast.groupby("region").apply(lambda x: x.nlargest(5,["total_crime"])),
+                   kind="bar", hue = "region")
+smnbar.fig.suptitle("Top 5 states with highest total crime in South, Midwest and Northeast Regions USA 1990", y=1.02)
+smnbar.set(xlabel = "Total Crime (x1000000)", ylabel = "Top 5 states in South, Midwest and Northeast Regions")
+plt.show()                
+
+##now we have top 5 total crime states in south, midwest and northeast regions
+##we want to show the comparison of serious crime and light crime in 1990
+##we will use total of violent_crime, homicide and aggravated_assault as serious crime
+##we will use total of robbery, property_crime, burglary, larceny and motor_vehicle_theft as light crime
+south_midwest_northeast["total_serious_crime"]=south_midwest_northeast["violent_crime"]+south_midwest_northeast["homicide"]+south_midwest_northeast["aggravated_assault"]
+south_midwest_northeast["total_light_crime"]=south_midwest_northeast["robbery"]+south_midwest_northeast["property_crime"]+south_midwest_northeast["burglary"]+south_midwest_northeast["larceny"]+south_midwest_northeast["motor_vehicle_theft"]
+print (south_midwest_northeast.head())
+print (south_midwest_northeast.info())
+
+serious=sns.lmplot(data=south_midwest_northeast,x="population",y="total_serious_crime",hue="region",ci=95)
+serious.fig.suptitle("Correlation between population and total serious crime rate in USA regions 1990",y=1.02)
+serious.set(xlabel="Population (x10000000)",ylabel="Total Serious Crime Rate")
+plt.show()
+
+light=sns.lmplot(data=south_midwest_northeast,x="population",y="total_light_crime",hue="region",ci=95)
+light.fig.suptitle("Correlation between population and total light crime rate in USA regions 1990",y=1.02)
+light.set(xlabel="Population (x10000000)",ylabel="Total Light Crime Rate")
+plt.show()
+
+##compare total crime rate of each region in 1979, 1990 and 2019
+year=(1979,1990,2019)
+compare=USA_crime_region_sorted_index[USA_crime_region_sorted_index["year"].isin(year)
+                                      ].sort_values(["year","region","total_crime"],ascending = [True,True,False])
+print (compare)
+compare_year=sns.catplot(x="region",y="total_crime",kind="bar",data=compare,hue="year",ci=None)
+compare_year.fig.suptitle("Comparison of total crime rate in each region USA in 1979,1990 and 2019",y=1.02)
+compare_year.set(xlabel="region", ylabel="Total Crime Rate")
+plt.show()
         
+##insight 5
+##top 5 states in each region in 2019 are they still the same?
+smn_2019 = USA_crime_region_sorted_index[(USA_crime_region_sorted_index["year"] == 2019)
+                                      &(USA_crime_region_sorted_index["region"].isin(["South","Midwest","Northeast"]))].sort_values(["region","total_crime"],ascending = [True,False])
+print (smn_2019.head())
 
-
-                
-            
-
- 
-
-
-
-
-
-        
-
-
-
-        
-
+smnbar_2019=sns.catplot(x="total_crime",y="state_name",
+                   data=smn_2019.groupby("region").apply(lambda x: x.nlargest(5,["total_crime"])),
+                   kind="bar", hue = "region")
+smnbar_2019.fig.suptitle("Top 5 states with highest total crime in South, Midwest and Northeast Regions USA 2019", y=1.02)
+smnbar_2019.set(xlabel = "Total Crime (x1000000)", ylabel = "Top 5 states in South, Midwest and Northeast Regions")
+plt.show()            
 
 
 
