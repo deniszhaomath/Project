@@ -262,6 +262,16 @@ crime_type_larceny.set_title("Mean Larceny Rate in Each Region USA 1979 - 2019")
 crime_type_larceny.set(xlabel="Year",ylabel="Larceny Rate")
 plt.show()
 
+##API task: seperate file
+##Import API data from alpha_vantage website 
+key = 'NNV2OBWS7SL55JOQ'
+from alpha_vantage.foreignexchange import ForeignExchange
+fx=ForeignExchange(key,output_format='pandas')
+fxdata=fx.get_currency_exchange_daily('EUR','USD',outputsize='compact')
+EUR_USD_Daily= pd.DataFrame(fxdata[0])
+print (EUR_USD_Daily)
+EUR_USD_Daily.plot(title='EUR to USD Daily Rate')
+
 ##The End
 
 
